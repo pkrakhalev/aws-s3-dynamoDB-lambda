@@ -1,0 +1,50 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.2'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+ext {
+    awsVersion = '1.11.555'
+    awsLambdaCoreVersion = '1.2.0'
+    awsLambdaEventsVersion = '2.2.6'
+    junitVersion = '5.4.2'
+    mockitoVersion = '2.1.0'
+}
+
+dependencies {
+    compile 'com.amazonaws:aws-java-sdk-bom:' + awsVersion
+    compile 'com.amazonaws:aws-java-sdk-s3:' + awsVersion
+    compile 'com.amazonaws:aws-lambda-java-core:' + awsLambdaCoreVersion
+    compile 'com.amazonaws:aws-lambda-java-events:' + awsLambdaEventsVersion
+    compile 'com.amazonaws:aws-java-sdk-dynamodb:' + awsVersion
+
+    testCompile 'org.mockito:mockito-core:' + mockitoVersion
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:' + junitVersion
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:' + junitVersion
+    testCompile 'org.junit.jupiter:junit-jupiter-params:' + junitVersion
+}
+
+// Java target version
+sourceCompatibility = 1.8
+
+test {
+    // Enable JUnit 5 (Gradle 4.6+).
+    useJUnitPlatform()
+
+    // Always run tests, even when nothing changed.
+    dependsOn 'cleanTest'
+}
