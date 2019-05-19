@@ -10,10 +10,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import java.io.IOException;
 
 import static com.amazonaws.lambda.hometask.LambdaFunctionHandler.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 class LambdaFunctionHandlerUnitTest {
@@ -45,7 +48,19 @@ class LambdaFunctionHandlerUnitTest {
         verify(lambdaLogger).log("Received event:ObjectCreated:Put");
         verifyNoMoreInteractions(lambdaLogger);
 
-        verify(dynamoDBService).putItem(anyString(), any(Item.class));
+        ArgumentCaptor<String> argument1 = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<Item> argument2 = ArgumentCaptor.forClass(Item.class);
+
+        verify(dynamoDBService).putItem(argument1.capture(), argument2.capture());
+
+        assertEquals(DYNAMO_DB_TABLE_NAME, argument1.getValue(), "First argument should be equals table name");
+        Item item = argument2.getValue();
+        assertAll("Second argument should be equals test item",
+                () -> assertEquals("0123456789abcdef0123456789abcdef", item.getString(FIELD_PACKAGE_ID)),
+                () -> assertEquals("example-bucket/test2.xml", item.getString(FIELD_FILE_PATH)),
+                () -> assertEquals("xml", item.getString(FIELD_FILE_TYPE))
+        );
+
         verifyNoMoreInteractions(dynamoDBService);
     }
 
