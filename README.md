@@ -4,7 +4,7 @@ AWS lambda function for update DynamoDB using S3 trigger
 When user adds/removes file from S3 backet, then the lambda function executes 
 and it adds/removes record with file info from DynamoDB date base. 
 
-![aws_lambda](aws_lambda.png)
+![aws_lambda](aws_lambda.PNG)
 
 
 DynamoDB
